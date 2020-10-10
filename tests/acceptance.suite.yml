@@ -1,0 +1,8 @@
+modules:
+   enabled:
+      - Db:
+         dsn: 'mysql:host=127.0.0.1;dbname=ips4_test'
+         user: 'root'
+         password: ''
+         reconnect: true
+         waitlock: 10

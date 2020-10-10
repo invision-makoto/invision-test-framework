@@ -1,0 +1,45 @@
+# suite config
+suites:
+    acceptance:
+        actor: AcceptanceTester
+        path: .
+        modules:
+            enabled:
+                - PhpBrowser:
+                    url: http://invision-test.local
+                - \Helper\Acceptance
+                
+        # add Codeception\Step\Retry trait to AcceptanceTester to enable retries
+        step_decorators:
+            - Codeception\Step\ConditionalAssertion
+            - Codeception\Step\TryTo
+            - Codeception\Step\Retry
+                
+extensions:
+    enabled: [Codeception\Extension\RunFailed]
+
+params: 
+    - env
+
+gherkin: []    
+
+# additional paths
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+
+settings:
+    shuffle: false
+    lint: true
+
+modules:
+   enabled:
+      - Db:
+         dsn: 'mysql:host=127.0.0.1;dbname=ips4_test'
+         user: 'root'
+         password: ''
+         reconnect: true
+         waitlock: 10
