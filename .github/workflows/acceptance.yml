@@ -1,0 +1,62 @@
+name: IPS 4.5
+
+on: [push]
+
+jobs:
+  ips-stable-tests:
+    runs-on: ubuntu-latest
+    env:
+      APP_DIR: example
+      HOSTNAME: invision-test.local
+    services:
+      mariadb:
+        image: mariadb:10.5
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+    steps:
+    - uses: actions/checkout@v2
+    - name: Verify MariaDB connection
+      env:
+        PORT: ${{ job.services.mariadb.ports[3306] }}
+      run: |
+        while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+          sleep 1
+        done
+    - name: Install Apache
+      run: pwd; sudo apt update; sudo apt install apache2 libapache2-mod-php unzip
+    - name: Update Apache configuration	
+      run: sudo sed 's/index.html/index.php/g' /etc/apache2/mods-enabled/dir.conf; sudo a2enmod rewrite; sudo curl -o /etc/apache2/sites-available/000-default.conf https://gist.githubusercontent.com/FujiMakoto/3b670d9fa67f96d0f30599d743421d6c/raw/957cac53aba3b7a142e417372d3546af522c63a4/000-default.conf
+    - name: Restart Apache
+      run: sudo systemctl restart apache2
+    - name: Update Hosts configuration
+      run: if [[ "$HOSTNAME" == "127.0.0.1" || "$HOSTNAME" == "localhost" ]]; then echo 'Skipping hosts assignment'; else echo "127.0.0.1 $HOSTNAME" | sudo tee -a /etc/hosts; fi
+    - name: Test that Apache is running
+      run: curl -I http://$HOSTNAME/
+    - name: Move to web directory
+      run: cd /var/www/html; sudo rm -rf ./*
+    - name: Download Invision Dev Helper
+      run: cd /var/www/html; sudo wget https://www.invision.dev/static/downloads/idh
+    - name: Download latest IPS release
+      run: cd /var/www/html; sudo php idh ips:download --license=${{ secrets.IPS_LICENSE }} --user="${{ secrets.IPS_USERNAME }}" --pass="${{ secrets.IPS_PASSWORD }}"
+    - name: Extract files
+      run: cd /var/www/html; sudo unzip -q 'Invision Community.zip'; sudo cp -rf ips_*/* ./; sudo rm 'Invision Community.zip'; sudo rm -rf ips_*
+    # - name: Ready latest application commit for installation
+    #   run: cd /var/www/html; sudo mkdir applications/$APP_DIR; sudo cp -rfv $GITHUB_WORKSPACE/* applications/$APP_DIR/
+    - name: Copy example test suite files
+      run: cd /var/www/html; sudo cp -rfv $GITHUB_WORKSPACE/* ./
+    - name: Run installation
+      run: cd /var/www/html; sudo php idh ips:install ${{ secrets.IPS_LICENSE }} admin admin@exmaple.com admin http://$HOSTNAME --db-name=ips4_test --db-pass=root --db-port=32768 --friendly-urls --test-mode
+    - name: Fix file permissions
+      run: sudo chmod -R a+rwX /var/www/html
+    - name: Download Codeception
+      run: cd /var/www/html; sudo wget https://codeception.com/codecept.phar
+    - name: Run Acceptance tests
+      run: cd /var/www/html; sudo php codecept.phar -vvv run
+    - name: Archive the output of failed acceptance tests
+      if: failure()
+      uses: actions/upload-artifact@v1
+      with:
+        name: acceptance-tests-output
+        path: /var/www/html/tests/_output
