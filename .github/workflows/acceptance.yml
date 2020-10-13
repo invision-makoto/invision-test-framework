@@ -53,7 +53,7 @@ jobs:
     - name: Download Codeception
       run: cd /var/www/html; sudo wget https://codeception.com/codecept.phar
     - name: Run Acceptance tests
-      run: cd /var/www/html; sudo php codecept.phar run
+      run: cd /var/www/html; sudo php codecept.phar -vvv run
     - name: Archive the output of failed acceptance tests
       if: failure()
       uses: actions/upload-artifact@v1
