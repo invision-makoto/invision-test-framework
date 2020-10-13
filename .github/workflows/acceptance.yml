@@ -39,7 +39,7 @@ jobs:
     - name: Download Invision Dev Helper
       run: cd /var/www/html; sudo wget https://www.invision.dev/static/downloads/idh
     - name: Download latest IPS release
-      run: cd /var/www/html; sudo php idh ips:download --license=${{ secrets.IPS_LICENSE }} --user="${{ secrets.IPS_USER }}" --pass="${{ secrets.IPS_PASSWORD }}"
+      run: cd /var/www/html; sudo php idh ips:download --license=${{ secrets.IPS_LICENSE }} --user="${{ secrets.IPS_USERNAME }}" --pass="${{ secrets.IPS_PASSWORD }}"
     - name: Extract files
       run: cd /var/www/html; sudo unzip -q 'Invision Community.zip'; sudo cp -rf ips_*/* ./; sudo rm 'Invision Community.zip'; sudo rm -rf ips_*
     # - name: Ready latest application commit for installation
