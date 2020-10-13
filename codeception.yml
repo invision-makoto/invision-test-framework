@@ -38,7 +38,7 @@ settings:
 modules:
    enabled:
       - Db:
-         dsn: 'mysql:host=127.0.0.1;dbname=ips4_test'
+         dsn: 'mysql:host=127.0.0.1;dbname=ips4_test;port=32768'
          user: 'root'
          password: ''
          reconnect: true
