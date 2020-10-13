@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_DIR: example
-      HOSTNAME: invision.local
+      HOSTNAME: invision-test.local
     services:
       mariadb:
         image: mariadb:10.5
