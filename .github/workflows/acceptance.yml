@@ -39,7 +39,7 @@ jobs:
     - name: Download Invision Dev Helper
       run: cd /var/www/html; sudo wget https://www.invision.dev/static/downloads/idh
     - name: Download latest IPS release
-      run: cd /var/www/html; sudo php idh ips:download --license=${{ secrets.LICENSE }} --user="${{ secrets.USER }}" --pass="${{ secrets.PASSWORD }}"
+      run: cd /var/www/html; sudo php idh ips:download --license=${{ secrets.IPS_LICENSE }} --user="${{ secrets.IPS_USER }}" --pass="${{ secrets.IPS_PASSWORD }}"
     - name: Extract files
       run: cd /var/www/html; sudo unzip -q 'Invision Community.zip'; sudo cp -rf ips_*/* ./; sudo rm 'Invision Community.zip'; sudo rm -rf ips_*
     # - name: Ready latest application commit for installation
@@ -47,7 +47,7 @@ jobs:
     - name: Copy example test suite files
       run: cd /var/www/html; sudo cp -rfv $GITHUB_WORKSPACE/* ./
     - name: Run installation
-      run: cd /var/www/html; sudo php idh ips:install ${{ secrets.LICENSE }} admin admin@exmaple.com admin http://$HOSTNAME --db-name=ips4_test --db-pass=root --db-port=32768 --friendly-urls --test-mode
+      run: cd /var/www/html; sudo php idh ips:install ${{ secrets.IPS_LICENSE }} admin admin@exmaple.com admin http://$HOSTNAME --db-name=ips4_test --db-pass=root --db-port=32768 --friendly-urls --test-mode
     - name: Fix file permissions
       run: sudo chmod -R a+rwX /var/www/html
     - name: Download Codeception
