@@ -51,9 +51,9 @@ jobs:
     - name: Fix file permissions
       run: sudo chmod -R a+rwX /var/www/html
     - name: Download Codeception
-      run: cd /var/www/html/tests; sudo wget https://codeception.com/codecept.phar
+      run: cd /var/www/html; sudo wget https://codeception.com/codecept.phar
     - name: Run Acceptance tests
-      run: cd /var/www/html/tests; sudo php codecept.phar run
+      run: cd /var/www/html; sudo php codecept.phar run
     - name: Archive the output of failed acceptance tests
       if: failure()
       uses: actions/upload-artifact@v1
