@@ -50,12 +50,10 @@ jobs:
       run: cd /var/www/html; sudo php idh ips:install ${{ secrets.IPS_LICENSE }} admin admin@exmaple.com admin http://$HOSTNAME --db-name=ips4_test --db-pass=root --db-port=32768 --friendly-urls --test-mode
     - name: Fix file permissions
       run: sudo chmod -R a+rwX /var/www/html
-    - name: Download Composer
-      run: cd /var/www/html; sudo curl -o composer.phar https://getcomposer.org/composer-stable.phar
-    - name: Install Codeception and Dependencies
-      run: cd /var/www/html; composer install
+    - name: Download Codeception
+      run: cd /var/www/html; sudo wget https://codeception.com/codecept.phar
     - name: Run Acceptance tests
-      run: cd /var/www/html; sudo php vendor/codeception/codeception/codecept run
+      run: cd /var/www/html; sudo php codecept.phar run
     - name: Archive the output of failed acceptance tests
       if: failure()
       uses: actions/upload-artifact@v1
